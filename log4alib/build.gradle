@@ -1,0 +1,79 @@
+apply plugin: 'com.android.library'
+
+android {
+    compileSdkVersion 28
+
+
+
+    defaultConfig {
+        minSdkVersion 21
+        targetSdkVersion 28
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+
+    implementation 'com.android.support:appcompat-v7:28.0.0'
+    testImplementation 'junit:junit:4.12'
+    androidTestImplementation 'com.android.support.test:runner:1.0.2'
+    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+}
+
+task makeJar(type: Jar) {
+    manifest {
+        attributes 'Main-Class': 'com.intsig.log4a'
+        attributes 'Manifest-Version': '1.1'
+        attributes 'Update-Time': '2018-12-20'
+    }
+    baseName 'log4a'
+    //删除存在的
+    delete 'build/log4a.jar'
+    //设置拷贝的文件
+    from('build/intermediates/javac/release/compileReleaseJavaWithJavac/classes')
+    //打进jar包后的文件目录
+//    into('build/')
+    //将classes.jar放入build/libs/目录下
+    //include ,exclude参数来设置过滤
+    //（我们只关心classes.jar这个文件）
+    include('classes.jar')
+    //过滤不需要的class
+    exclude "**/**/BuildConfig.class"
+    exclude "**/**/BuildConfig\$*.class"
+    exclude "**/R.class"
+    exclude "**/R\$*.class"
+    //指定打包的class
+    include "com/intsig/**/*.class"
+    include "com/intsig/**/*.properties"
+    //重命名
+    rename ('classes.jar', 'log4a.jar')
+}
+makeJar.dependsOn(build)
+
+////打包任务
+//task makeJar(type: Jar) {
+//    //指定生成的jar名
+//    baseName 'TestSDK'
+//    //从哪里打包class文件
+//    from('build/intermediates/javac/release/compileReleaseJavaWithJavac/')
+//    //打包到jar后的目录结构
+//    into('com/intsig/log4a/')
+//    //去掉不需要打包的目录和文件
+//    exclude('BuildConfig.class', 'R.class')
+//    //去掉R$开头的文件
+//    exclude { it.name.startsWith('R$') }
+//}
+//makeJar.dependsOn(clearJar, build)
