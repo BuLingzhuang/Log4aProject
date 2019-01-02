@@ -15,42 +15,42 @@ import java.util.Enumeration;
 import java.util.Properties;
 
 public class PropertyConfigure {
-    public static final String VAL_LEVEL_OFF = "off";
-    public static final String VAL_LEVEL_ERROR = "error";
-    public static final String VAL_LEVEL_WARN = "warn";
-    public static final String VAL_LEVEL_INFO = "info";
-    public static final String VAL_LEVEL_DEBUG = "debug";
-    public static final String VAL_APPENDER_FILE = "file";
-    public static final String VAL_APPENDER_ENC_FILE = "enc_file";
-    public static final String VAL_APPENDER_CONSOLE = "console";
-    public static final String VAL_APPENDER_LOGCAT = "logcat";
-    public static final String VAL_THREAD_NAME = "name";
-    public static final String VAL_THREAD_ID = "id";
-    public static final String VAL_THREAD_NAME_ID = "name/id";
-    public static final String PROP_LEVEL = "log4a.level";
-    public static final String PROP_APPENDER = "log4a.appender";
-    public static final String PROP_APPENDER_FILE_DIR = "log4a.appender.file.dir";
-    public static final String PROP_APPENDER_FILE_NAME = "log4a.appender.file.name";
-    public static final String PROP_APPENDER_FILE_ZIP = "log4a.appender.file.zip";
-    public static final String PROP_APPENDER_FILE_MAXSIZE = "log4a.appender.file.maxsize";
-    public static final String PROP_APPENDER_FILE_NUMBERS = "log4a.appender.file.maxnumbers";
-    public static final String PROP_APPENDER_FILE_FLUSH_IMMEDIATELY = "log4a.appender.file.flush.immediately";
-    public static final String PROP_TIME_FORMAT = "log4a.time.format";
-    public static final String PROP_THREAD_NAME = "log4a.thread";
-    public static final String PROP_FORMAT = "log4a.format";
+    static final String VAL_LEVEL_OFF = "off";
+    static final String VAL_LEVEL_ERROR = "error";
+    static final String VAL_LEVEL_WARN = "warn";
+    static final String VAL_LEVEL_INFO = "info";
+    static final String VAL_LEVEL_DEBUG = "debug";
+    static final String VAL_APPENDER_FILE = "file";
+    static final String VAL_APPENDER_ENC_FILE = "enc_file";
+    static final String VAL_APPENDER_CONSOLE = "console";
+    static final String VAL_APPENDER_LOGCAT = "logcat";
+    static final String VAL_THREAD_NAME = "name";
+    static final String VAL_THREAD_ID = "id";
+    static final String VAL_THREAD_NAME_ID = "name/id";
+    static final String PROP_LEVEL = "log4a.level";
+    static final String PROP_APPENDER = "log4a.appender";
+    static final String PROP_APPENDER_FILE_DIR = "log4a.appender.file.dir";
+    static final String PROP_APPENDER_FILE_NAME = "log4a.appender.file.name";
+    static final String PROP_APPENDER_FILE_ZIP = "log4a.appender.file.zip";
+    static final String PROP_APPENDER_FILE_MAXSIZE = "log4a.appender.file.maxsize";
+    static final String PROP_APPENDER_FILE_NUMBERS = "log4a.appender.file.maxnumbers";
+    static final String PROP_APPENDER_FILE_FLUSH_IMMEDIATELY = "log4a.appender.file.flush.immediately";
+    static final String PROP_TIME_FORMAT = "log4a.time.format";
+    static final String PROP_THREAD_NAME = "log4a.thread";
+    static final String PROP_FORMAT = "log4a.format";
     Properties properties;
     Level level;
     String logDir;
     long fileMaxSize;
     int fileMaxNUm;
-    Layout mLayout;
+    PropertyConfigure.Layout mLayout;
 
     public PropertyConfigure(String name) {
-        this((Properties) null, name);
+        this((Properties)null, name);
     }
 
     public PropertyConfigure(Properties prop) {
-        this(prop, (String) null);
+        this(prop, (String)null);
     }
 
     public PropertyConfigure(Properties prop, String propPath) {
@@ -62,7 +62,7 @@ public class PropertyConfigure {
         if (prop != null) {
             Enumeration enume = prop.propertyNames();
 
-            while (enume.hasMoreElements()) {
+            while(enume.hasMoreElements()) {
                 Object key = enume.nextElement();
                 this.properties.put(key, prop.get(key));
             }
@@ -92,7 +92,7 @@ public class PropertyConfigure {
         } else if ("console".equals(appenderName)) {
             return new ConsoleAppender(this);
         } else {
-            return (Appender) ("enc_file".equals(appenderName) ? new EncFileAppender(this, 20) : new FileAppender(this, 20));
+            return (Appender)("enc_file".equals(appenderName) ? new EncFileAppender(this, 20) : new FileAppender(this, 20));
         }
     }
 
@@ -113,7 +113,7 @@ public class PropertyConfigure {
         String seq = this.properties.getProperty("log4a.format", "%l\t%d %t\t%g\t%m");
         String date_format = this.properties.getProperty("log4a.time.format", "MM-dd HH:mm:ss.SSS");
         String thread = this.properties.getProperty("log4a.thread", "name");
-        this.mLayout = new Layout(seq, date_format, thread);
+        this.mLayout = new PropertyConfigure.Layout(seq, date_format, thread);
     }
 
     public Level getLevel() {
@@ -126,7 +126,7 @@ public class PropertyConfigure {
 
     public String getLogDir() {
         if (this.logDir == null) {
-            String path = this.properties.getProperty("log4a.appender.file.dir", (String) null);
+            String path = this.properties.getProperty("log4a.appender.file.dir", (String)null);
             this.logDir = path;
         }
 
@@ -219,7 +219,7 @@ public class PropertyConfigure {
             String[] elements = seq.split("%");
             this.sequence = new byte[elements.length];
 
-            for (int i = 0; i < elements.length; ++i) {
+            for(int i = 0; i < elements.length; ++i) {
                 String s = elements[i].trim();
                 if (s.length() > 0) {
                     this.sequence[i] = elements[i].getBytes()[0];
@@ -233,9 +233,9 @@ public class PropertyConfigure {
             byte[] var6 = this.sequence;
             int var5 = this.sequence.length;
 
-            for (int var4 = 0; var4 < var5; ++var4) {
+            for(int var4 = 0; var4 < var5; ++var4) {
                 byte e = var6[var4];
-                switch (e) {
+                switch(e) {
                     case 100:
                         str.append(this.dateFormat.format(new Date()));
                         break;

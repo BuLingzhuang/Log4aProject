@@ -7,7 +7,6 @@ package com.intsig.log4a;
 
 import com.intsig.encryptfile.ISEncryptFile;
 import com.intsig.encryptfile.ISEncryptFile.FileOutputStream;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FilenameFilter;
@@ -70,6 +69,8 @@ public class EncFileAppender extends FileAppender {
             } else {
                 this.out = this.createNewLogFile(log_dir);
             }
+        } catch (FileNotFoundException var13) {
+            var13.printStackTrace();
         } catch (IOException var14) {
             var14.printStackTrace();
         }

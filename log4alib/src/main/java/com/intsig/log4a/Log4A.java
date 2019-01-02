@@ -10,7 +10,7 @@ import java.util.Iterator;
 import java.util.Properties;
 
 public class Log4A {
-    static final String VERSION = "0.2";
+    static final String VERSION = "0.1";
     static Appender mAppender;
     static boolean isInit = false;
     static String dir = null;
@@ -21,29 +21,14 @@ public class Log4A {
     public Log4A() {
     }
 
-    public static void init() {
-        init("/sdcard/log4a.properties");
-    }
-
     public static void init(Properties properties) {
-        init(properties, false);
-    }
-
-    /**
-     * @param properties   参数配置
-     * @param useLocalProp 是否加载本地配置
-     */
-    public static void init(Properties properties, boolean useLocalProp) {
-        if (useLocalProp) {
-            configure = new PropertyConfigure(properties, "/sdcard/log4a.properties");
-        } else {
-            configure = new PropertyConfigure(properties);
-        }
+        configure = new PropertyConfigure(properties, "/sdcard/log4a.properties");
         mAppender = configure.getAppender();
         dir = configure.getLogDir();
         if (mAppender instanceof LogcatAppender) {
             sExtraAppender = new EncFileAppender(configure, 20);
         }
+
     }
 
     public static void init(String properties) {
@@ -61,10 +46,14 @@ public class Log4A {
 
     public static String getLogFile() {
         if (mAppender instanceof FileAppender) {
-            return ((FileAppender) mAppender).getCurrentLogFile();
+            return ((FileAppender)mAppender).getCurrentLogFile();
         } else {
             return sExtraAppender != null ? sExtraAppender.getCurrentLogFile() : null;
         }
+    }
+
+    public static void init() {
+        init("/sdcard/log4a.properties");
     }
 
     public static void clear() {
@@ -91,8 +80,8 @@ public class Log4A {
     public static void close() {
         Iterator var1 = loggers.iterator();
 
-        while (var1.hasNext()) {
-            Logger l = (Logger) var1.next();
+        while(var1.hasNext()) {
+            Logger l = (Logger)var1.next();
             l.close();
         }
 
