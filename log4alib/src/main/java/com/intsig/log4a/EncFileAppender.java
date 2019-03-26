@@ -38,7 +38,7 @@ public class EncFileAppender extends FileAppender {
 
             String[] logs = log_dir.list(new FilenameFilter() {
                 public boolean accept(File dir, String filename) {
-                    return filename.endsWith(".log");
+                    return filename.endsWith(FILE_NAME_FOOT);
                 }
             });
             if (logs != null && logs.length >= 1) {
@@ -71,8 +71,6 @@ public class EncFileAppender extends FileAppender {
             }
         } catch (FileNotFoundException var13) {
             var13.printStackTrace();
-        } catch (IOException var14) {
-            var14.printStackTrace();
         }
 
         this.flushImmediately = configure.flushImmediately();
@@ -80,7 +78,7 @@ public class EncFileAppender extends FileAppender {
 
     public OutputStream createNewLogFile(File dir) throws FileNotFoundException {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
-        String name = "log-" + sdf.format(new Date()) + ".log";
+        String name = FILE_NAME_HEAD + sdf.format(new Date()) + FILE_NAME_FOOT;
         File log = new File(dir, name);
         this.current_log_file = log.getAbsolutePath();
         return new FileOutputStream(this.current_log_file, true);

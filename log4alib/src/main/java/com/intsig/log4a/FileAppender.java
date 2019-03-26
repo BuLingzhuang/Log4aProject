@@ -23,6 +23,9 @@ public class FileAppender extends Appender {
     String current_log_file;
     byte[] CRLF = new byte[]{13, 10};
 
+    static final String FILE_NAME_HEAD = "log-";
+    static final String FILE_NAME_FOOT = ".log";
+
     public FileAppender(PropertyConfigure configure, int buffersize) {
         super(configure, buffersize);
         this.init(configure);
@@ -32,9 +35,24 @@ public class FileAppender extends Appender {
         return this.current_log_file;
     }
 
+    public String[] getHistoryLogFiles() {
+        String[] result = null;
+        String dir = mConfigure.getLogDir();
+
+        File logDir = new File(dir);
+        if (logDir.exists()) {
+            result = logDir.list(new FilenameFilter() {
+                public boolean accept(File dir, String filename) {
+                    return filename.startsWith(FILE_NAME_HEAD) && filename.endsWith(FILE_NAME_FOOT);
+                }
+            });
+        }
+        return result;
+    }
+
     OutputStream createNewLogFile(File dir) throws FileNotFoundException {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
-        String name = "log-" + sdf.format(new Date()) + ".log";
+        String name = FILE_NAME_HEAD + sdf.format(new Date()) + FILE_NAME_FOOT;
         File log = new File(dir, name);
         this.current_log_file = log.getAbsolutePath();
         return new FileOutputStream(log);
@@ -73,7 +91,7 @@ public class FileAppender extends Appender {
 
             String[] logs = log_dir.list(new FilenameFilter() {
                 public boolean accept(File dir, String filename) {
-                    return filename.endsWith(".log");
+                    return filename.endsWith(FILE_NAME_FOOT);
                 }
             });
             if (logs != null && logs.length >= 1) {

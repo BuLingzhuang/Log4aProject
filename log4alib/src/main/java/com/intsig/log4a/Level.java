@@ -11,11 +11,11 @@ public class Level {
     public static final int WARN_INT = 3000;
     public static final int INFO_INT = 5000;
     public static final int DEBUG_INT = 4000;
-    public static final Level OFF = new Level(1000, "OFF");
-    public static final Level ERROR = new Level(2000, "ERROR");
-    public static final Level WARN = new Level(3000, "WARN");
-    public static final Level INFO = new Level(5000, "INFO");
-    public static final Level DEBUG = new Level(4000, "DEBUG");
+    public static final Level OFF = new Level(1000, PropertyConfigure.VAL_LEVEL_OFF);
+    public static final Level ERROR = new Level(2000, PropertyConfigure.VAL_LEVEL_ERROR);
+    public static final Level WARN = new Level(3000, PropertyConfigure.VAL_LEVEL_WARN);
+    public static final Level INFO = new Level(5000, PropertyConfigure.VAL_LEVEL_INFO);
+    public static final Level DEBUG = new Level(4000, PropertyConfigure.VAL_LEVEL_DEBUG);
     int level;
     String levelStr;
 

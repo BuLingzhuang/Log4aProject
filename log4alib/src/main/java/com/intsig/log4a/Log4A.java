@@ -10,13 +10,13 @@ import java.util.Iterator;
 import java.util.Properties;
 
 public class Log4A {
-    static final String VERSION = "0.1";
+    static final String VERSION = "1.1";
     static Appender mAppender;
     static boolean isInit = false;
     static String dir = null;
     static PropertyConfigure configure;
     static EncFileAppender sExtraAppender;
-    static ArrayList<Logger> loggers = new ArrayList();
+    static ArrayList<Logger> loggers = new ArrayList<>();
 
     public Log4A() {
     }
@@ -52,6 +52,14 @@ public class Log4A {
         }
     }
 
+    public static String[] getHisLogFiles() {
+        if (mAppender instanceof FileAppender) {
+            return ((FileAppender) mAppender).getHistoryLogFiles();
+        } else {
+            return sExtraAppender != null ? sExtraAppender.getHistoryLogFiles() : null;
+        }
+    }
+
     public static void init() {
         init("/sdcard/log4a.properties");
     }
@@ -78,13 +86,11 @@ public class Log4A {
     }
 
     public static void close() {
-        Iterator var1 = loggers.iterator();
-
-        while(var1.hasNext()) {
-            Logger l = (Logger)var1.next();
-            l.close();
+        for (Logger l : loggers) {
+            if (l != null) {
+                l.close();
+            }
         }
-
         loggers.clear();
         mAppender.close();
         isInit = false;
