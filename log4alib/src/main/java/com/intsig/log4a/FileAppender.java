@@ -35,13 +35,14 @@ public class FileAppender extends Appender {
         return this.current_log_file;
     }
 
-    public String[] getHistoryLogFiles() {
-        String[] result = null;
+    public File[] getHistoryLogFiles() {
+        File[] result = null;
         String dir = mConfigure.getLogDir();
 
         File logDir = new File(dir);
         if (logDir.exists()) {
-            result = logDir.list(new FilenameFilter() {
+            result = logDir.listFiles(new FilenameFilter() {
+                @Override
                 public boolean accept(File dir, String filename) {
                     return filename.startsWith(FILE_NAME_HEAD) && filename.endsWith(FILE_NAME_FOOT);
                 }

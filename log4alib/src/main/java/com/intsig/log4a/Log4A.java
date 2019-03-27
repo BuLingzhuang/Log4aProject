@@ -5,6 +5,7 @@
 
 package com.intsig.log4a;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Properties;
@@ -52,7 +53,7 @@ public class Log4A {
         }
     }
 
-    public static String[] getHisLogFiles() {
+    public static File[] getHisLogFiles() {
         if (mAppender instanceof FileAppender) {
             return ((FileAppender) mAppender).getHistoryLogFiles();
         } else {
