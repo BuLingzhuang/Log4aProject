@@ -46,19 +46,25 @@ public class Log4A {
     }
 
     public static String getLogFile() {
-        if (mAppender instanceof FileAppender) {
-            return ((FileAppender)mAppender).getCurrentLogFile();
-        } else {
-            return sExtraAppender != null ? sExtraAppender.getCurrentLogFile() : null;
+        if (mAppender != null) {
+            if (mAppender instanceof FileAppender) {
+                return ((FileAppender) mAppender).getCurrentLogFile();
+            } else {
+                return sExtraAppender != null ? sExtraAppender.getCurrentLogFile() : null;
+            }
         }
+        return null;
     }
 
     public static File[] getHisLogFiles() {
-        if (mAppender instanceof FileAppender) {
-            return ((FileAppender) mAppender).getHistoryLogFiles();
-        } else {
-            return sExtraAppender != null ? sExtraAppender.getHistoryLogFiles() : null;
+        if (mAppender != null) {
+            if (mAppender instanceof FileAppender) {
+                return ((FileAppender) mAppender).getHistoryLogFiles();
+            } else {
+                return sExtraAppender != null ? sExtraAppender.getHistoryLogFiles() : null;
+            }
         }
+        return null;
     }
 
     public static void init() {
@@ -74,7 +80,9 @@ public class Log4A {
 
     public static void reopen() {
         if (configure != null) {
-            mAppender.reopen(configure);
+            if (mAppender != null) {
+                mAppender.reopen(configure);
+            }
             dir = configure.getLogDir();
             isInit = true;
             if (sExtraAppender != null) {
@@ -93,7 +101,9 @@ public class Log4A {
             }
         }
         loggers.clear();
-        mAppender.close();
+        if (mAppender != null) {
+            mAppender.close();
+        }
         isInit = false;
         if (sExtraAppender != null) {
             sExtraAppender.close();

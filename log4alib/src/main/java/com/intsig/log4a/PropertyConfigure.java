@@ -15,11 +15,11 @@ import java.util.Enumeration;
 import java.util.Properties;
 
 public class PropertyConfigure {
-    public static final String VAL_LEVEL_OFF = "OFF";
-    public static final String VAL_LEVEL_ERROR = "ERROR";
-    public static final String VAL_LEVEL_WARN = "WARN";
-    public static final String VAL_LEVEL_INFO = "INFO";
-    public static final String VAL_LEVEL_DEBUG = "DEBUG";
+    public static final String VAL_LEVEL_OFF = "off";
+    public static final String VAL_LEVEL_ERROR = "error";
+    public static final String VAL_LEVEL_WARN = "warn";
+    public static final String VAL_LEVEL_INFO = "info";
+    public static final String VAL_LEVEL_DEBUG = "debug";
     public static final String VAL_APPENDER_FILE = "file";
     public static final String VAL_APPENDER_ENC_FILE = "enc_file";
     public static final String VAL_APPENDER_CONSOLE = "console";
