@@ -5,6 +5,8 @@
 
 package com.intsig.log4a;
 
+import java.io.File;
+import java.io.FilenameFilter;
 import java.util.LinkedList;
 
 public abstract class Appender implements Runnable {
@@ -13,6 +15,11 @@ public abstract class Appender implements Runnable {
     int bufferSize;
     LinkedList<LogEvent> mBuffer;
     boolean alive;
+    private WriteListener writeListener;
+    static final String FILE_NAME_HEAD = "log-";
+    static final String CACHE_FILE_NAME_HEAD = "cacheLog-";
+    static final String CACHE_FILE_NAME = "CamScanner";
+    static final String FILE_NAME_FOOT = ".log";
 
     public Appender(PropertyConfigure configure, int buffer) {
         this.bufferSize = 0;
@@ -75,6 +82,27 @@ public abstract class Appender implements Runnable {
 
     }
 
+    public File[] getHistoryLogFiles() {
+        File[] result = null;
+        String dir = mConfigure.getLogDir();
+
+        File logDir = new File(dir);
+        if (logDir.exists()) {
+            result = logDir.listFiles(new FilenameFilter() {
+                @Override
+                public boolean accept(File dir, String filename) {
+                    return filename.startsWith(FILE_NAME_HEAD) && filename.endsWith(FILE_NAME_FOOT);
+                }
+            });
+        }
+        return result;
+    }
+
+    public void setWriteListener(WriteListener writeListener) {
+        this.writeListener = writeListener;
+    }
+
+    @Override
     public void run() {
         while(true) {
             try {
@@ -86,7 +114,9 @@ public abstract class Appender implements Runnable {
                             if (!this.alive) {
                                 return;
                             }
-
+                            if (writeListener != null) {
+                                writeListener.finish();
+                            }
                             this.mBuffer.wait();
                         }
 
@@ -104,5 +134,9 @@ public abstract class Appender implements Runnable {
 
             return;
         }
+    }
+
+    public interface WriteListener {
+        void finish();
     }
 }

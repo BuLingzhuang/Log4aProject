@@ -12,6 +12,7 @@ import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Enumeration;
+import java.util.Locale;
 import java.util.Properties;
 
 public class PropertyConfigure {
@@ -21,6 +22,7 @@ public class PropertyConfigure {
     public static final String VAL_LEVEL_INFO = "info";
     public static final String VAL_LEVEL_DEBUG = "debug";
     public static final String VAL_APPENDER_FILE = "file";
+    public static final String VAL_APPENDER_FAST_FILE = "fast_file";
     public static final String VAL_APPENDER_ENC_FILE = "enc_file";
     public static final String VAL_APPENDER_CONSOLE = "console";
     public static final String VAL_APPENDER_LOGCAT = "logcat";
@@ -29,10 +31,12 @@ public class PropertyConfigure {
     public static final String VAL_THREAD_NAME_ID = "name/id";
     public static final String PROP_LEVEL = "log4a.level";
     public static final String PROP_APPENDER = "log4a.appender";
+    public static final String PROP_EXTRA_APPENDER = "log4a.extra.appender";
     public static final String PROP_APPENDER_FILE_DIR = "log4a.appender.file.dir";
     public static final String PROP_APPENDER_FILE_NAME = "log4a.appender.file.name";
     public static final String PROP_APPENDER_FILE_ZIP = "log4a.appender.file.zip";
     public static final String PROP_APPENDER_FILE_MAXSIZE = "log4a.appender.file.maxsize";
+    public static final String PROP_APPENDER_CACHE_MAXSIZE = "log4a.appender.cache.maxsize";
     public static final String PROP_APPENDER_FILE_NUMBERS = "log4a.appender.file.maxnumbers";
     public static final String PROP_APPENDER_FILE_FLUSH_IMMEDIATELY = "log4a.appender.file.flush.immediately";
     public static final String PROP_TIME_FORMAT = "log4a.time.format";
@@ -41,7 +45,7 @@ public class PropertyConfigure {
     Properties properties;
     Level level;
     String logDir;
-    long fileMaxSize;
+    long fileMaxSize, cacheMaxSize;
     int fileMaxNUm;
     PropertyConfigure.Layout mLayout;
 
@@ -58,6 +62,7 @@ public class PropertyConfigure {
         this.level = Level.ERROR;
         this.logDir = null;
         this.fileMaxSize = -1L;
+        this.cacheMaxSize = -1L;
         this.fileMaxNUm = -1;
         if (prop != null) {
             Enumeration enume = prop.propertyNames();
@@ -87,12 +92,23 @@ public class PropertyConfigure {
         String appenderName = this.properties.getProperty(PROP_APPENDER);
         if (VAL_APPENDER_LOGCAT.equals(appenderName)) {
             return new LogcatAppender(this);
-        } else if (VAL_APPENDER_FILE.equals(appenderName)) {
-            return new FileAppender(this, 20);
         } else if (VAL_APPENDER_CONSOLE.equals(appenderName)) {
             return new ConsoleAppender(this);
+        } else if (VAL_APPENDER_ENC_FILE.equals(appenderName)) {
+            return new EncFileAppender(this, 20);
+        } else if (VAL_APPENDER_FAST_FILE.equals(appenderName)) {
+            return new FastFileAppender(this, 20);
         } else {
-            return VAL_APPENDER_ENC_FILE.equals(appenderName) ? new EncFileAppender(this, 20) : new FileAppender(this, 20);
+            return new FileAppender(this, 20);
+        }
+    }
+
+    public Appender getExtraAppender() {
+        String extraAppenderType = this.properties.getProperty(PROP_EXTRA_APPENDER, VAL_APPENDER_FAST_FILE);
+        if (VAL_APPENDER_FAST_FILE.equals(extraAppenderType)) {
+            return new FastFileAppender(this, 20);
+        } else {
+            return new EncFileAppender(this, 20);
         }
     }
 
@@ -160,6 +176,33 @@ public class PropertyConfigure {
         return this.fileMaxSize;
     }
 
+    public long getCacheMaxSize() {
+        if (this.cacheMaxSize < 0L) {
+            String size = this.properties.getProperty(PROP_APPENDER_CACHE_MAXSIZE, "1M");
+
+            try {
+                size = size.trim().toUpperCase();
+                char c = size.charAt(size.length() - 1);
+                if (c == 'M' || c == 'K') {
+                    size = size.substring(0, size.length() - 1);
+                }
+
+                long l = Long.parseLong(size);
+                if (c == 'M') {
+                    l *= 1048576L;
+                } else if (c == 'K') {
+                    l *= 1024L;
+                }
+
+                this.cacheMaxSize = l;
+            } catch (Exception var5) {
+                var5.printStackTrace();
+                this.cacheMaxSize = 1048576L;
+            }
+        }
+        return this.cacheMaxSize;
+    }
+
     public int getFileMaxNum() {
         if (this.fileMaxNUm < 0) {
             String num = this.properties.getProperty(PROP_APPENDER_FILE_NUMBERS, "1");
@@ -206,7 +249,7 @@ public class PropertyConfigure {
         byte[] sequence;
 
         public Layout(String seq, String date_format, String thread) {
-            this.dateFormat = new SimpleDateFormat(date_format);
+            this.dateFormat = new SimpleDateFormat(date_format, Locale.CHINA);
             if (VAL_THREAD_NAME_ID.equals(thread)) {
                 this.thread_format = 3;
             } else if (VAL_THREAD_NAME.equals(thread)) {

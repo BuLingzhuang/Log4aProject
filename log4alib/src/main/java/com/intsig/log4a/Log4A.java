@@ -7,7 +7,6 @@ package com.intsig.log4a;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.Properties;
 
 public class Log4A {
@@ -16,7 +15,7 @@ public class Log4A {
     static boolean isInit = false;
     static String dir = null;
     static PropertyConfigure configure;
-    static EncFileAppender sExtraAppender;
+    static Appender sExtraAppender;
     static ArrayList<Logger> loggers = new ArrayList<>();
 
     public Log4A() {
@@ -27,9 +26,8 @@ public class Log4A {
         mAppender = configure.getAppender();
         dir = configure.getLogDir();
         if (mAppender instanceof LogcatAppender) {
-            sExtraAppender = new EncFileAppender(configure, 20);
+            sExtraAppender = configure.getExtraAppender();
         }
-
     }
 
     public static void init(String properties) {
@@ -45,12 +43,26 @@ public class Log4A {
         }
     }
 
+    public static void setWriteListener(Appender.WriteListener writeListener) {
+        if (mAppender != null) {
+            mAppender.setWriteListener(writeListener);
+        }
+    }
+
     public static String getLogFile() {
         if (mAppender != null) {
             if (mAppender instanceof FileAppender) {
                 return ((FileAppender) mAppender).getCurrentLogFile();
+            } else if (mAppender instanceof FastFileAppender) {
+                return ((FastFileAppender) mAppender).getCurrentLogFile();
             } else {
-                return sExtraAppender != null ? sExtraAppender.getCurrentLogFile() : null;
+                if (sExtraAppender instanceof EncFileAppender) {
+                    return ((EncFileAppender) sExtraAppender).getCurrentLogFile();
+                } else if (sExtraAppender instanceof FileAppender) {
+                    return ((FileAppender) sExtraAppender).getCurrentLogFile();
+                } else if (sExtraAppender instanceof FastFileAppender) {
+                    return ((FastFileAppender) sExtraAppender).getCurrentLogFile();
+                }
             }
         }
         return null;
@@ -58,10 +70,14 @@ public class Log4A {
 
     public static File[] getHisLogFiles() {
         if (mAppender != null) {
-            if (mAppender instanceof FileAppender) {
-                return ((FileAppender) mAppender).getHistoryLogFiles();
+            if (mAppender instanceof FileAppender || mAppender instanceof FastFileAppender) {
+                return mAppender.getHistoryLogFiles();
             } else {
-                return sExtraAppender != null ? sExtraAppender.getHistoryLogFiles() : null;
+                if (sExtraAppender != null) {
+                    if (sExtraAppender instanceof FileAppender || sExtraAppender instanceof FastFileAppender) {
+                        return sExtraAppender.getHistoryLogFiles();
+                    }
+                }
             }
         }
         return null;
@@ -120,6 +136,15 @@ public class Log4A {
     }
 
     public static String geExtratLogFile() {
-        return sExtraAppender != null ? sExtraAppender.getCurrentLogFile() : null;
+        if (sExtraAppender != null) {
+            if (sExtraAppender instanceof EncFileAppender) {
+                return ((EncFileAppender) sExtraAppender).getCurrentLogFile();
+            } else if (sExtraAppender instanceof FileAppender) {
+                return ((FileAppender) sExtraAppender).getCurrentLogFile();
+            } else if (sExtraAppender instanceof FastFileAppender) {
+                return ((FastFileAppender) sExtraAppender).getCurrentLogFile();
+            }
+        }
+        return null;
     }
 }

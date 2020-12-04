@@ -7,21 +7,23 @@ package com.intsig.log4a;
 
 import com.intsig.encryptfile.ISEncryptFile;
 import com.intsig.encryptfile.ISEncryptFile.FileOutputStream;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FilenameFilter;
-import java.io.IOException;
 import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.Locale;
 
 public class EncFileAppender extends FileAppender {
     public EncFileAppender(PropertyConfigure configure, int buffersize) {
         super(configure, buffersize);
     }
 
+    @Override
     public void init(PropertyConfigure configure) {
         String dir = configure.getLogDir();
 
@@ -52,7 +54,7 @@ public class EncFileAppender extends FileAppender {
                 File f = new File(log_dir, log);
                 long s = f.length();
                 if (s > configure.getFileMaxSize()) {
-                    for(int tmp = num; tmp >= configure.getFileMaxNum(); --tmp) {
+                    for (int tmp = num; tmp >= configure.getFileMaxNum(); --tmp) {
                         File first = new File(log_dir, logs[num - tmp]);
                         first.delete();
                     }
@@ -76,8 +78,9 @@ public class EncFileAppender extends FileAppender {
         this.flushImmediately = configure.flushImmediately();
     }
 
+    @Override
     public OutputStream createNewLogFile(File dir) throws FileNotFoundException {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss", Locale.CHINA);
         String name = FILE_NAME_HEAD + sdf.format(new Date()) + FILE_NAME_FOOT;
         File log = new File(dir, name);
         this.current_log_file = log.getAbsolutePath();

@@ -15,6 +15,7 @@ import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.Locale;
 import java.util.zip.GZIPOutputStream;
 
 public class FileAppender extends Appender {
@@ -22,9 +23,6 @@ public class FileAppender extends Appender {
     boolean flushImmediately = false;
     String current_log_file;
     byte[] CRLF = new byte[]{13, 10};
-
-    static final String FILE_NAME_HEAD = "log-";
-    static final String FILE_NAME_FOOT = ".log";
 
     public FileAppender(PropertyConfigure configure, int buffersize) {
         super(configure, buffersize);
@@ -35,30 +33,15 @@ public class FileAppender extends Appender {
         return this.current_log_file;
     }
 
-    public File[] getHistoryLogFiles() {
-        File[] result = null;
-        String dir = mConfigure.getLogDir();
-
-        File logDir = new File(dir);
-        if (logDir.exists()) {
-            result = logDir.listFiles(new FilenameFilter() {
-                @Override
-                public boolean accept(File dir, String filename) {
-                    return filename.startsWith(FILE_NAME_HEAD) && filename.endsWith(FILE_NAME_FOOT);
-                }
-            });
-        }
-        return result;
-    }
-
     OutputStream createNewLogFile(File dir) throws FileNotFoundException {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss", Locale.CHINA);
         String name = FILE_NAME_HEAD + sdf.format(new Date()) + FILE_NAME_FOOT;
         File log = new File(dir, name);
         this.current_log_file = log.getAbsolutePath();
         return new FileOutputStream(log);
     }
 
+    @Override
     public synchronized void append(LogEvent event) {
         if (this.enable(event.level)) {
             try {
@@ -67,10 +50,8 @@ public class FileAppender extends Appender {
                 if (this.flushImmediately) {
                     this.out.flush();
                 }
-            } catch (IOException var3) {
+            } catch (IOException | NullPointerException var3) {
                 var3.printStackTrace();
-            } catch (NullPointerException var4) {
-                var4.printStackTrace();
             }
         }
 
@@ -91,6 +72,7 @@ public class FileAppender extends Appender {
             }
 
             String[] logs = log_dir.list(new FilenameFilter() {
+                @Override
                 public boolean accept(File dir, String filename) {
                     return filename.endsWith(FILE_NAME_FOOT);
                 }
@@ -98,6 +80,7 @@ public class FileAppender extends Appender {
             if (logs != null && logs.length >= 1) {
                 int num = logs.length;
                 Arrays.sort(logs, new Comparator<String>() {
+                    @Override
                     public int compare(String lhs, String rhs) {
                         return lhs.compareTo(rhs);
                     }
@@ -109,7 +92,7 @@ public class FileAppender extends Appender {
                     this.out = new FileOutputStream(f, true);
                     this.current_log_file = f.getAbsolutePath();
                 } else {
-                    for(int tmp = num; tmp >= configure.getFileMaxNum(); --tmp) {
+                    for (int tmp = num; tmp >= configure.getFileMaxNum(); --tmp) {
                         File first = new File(log_dir, logs[num - tmp]);
                         first.delete();
                     }
@@ -123,29 +106,27 @@ public class FileAppender extends Appender {
             if (configure.isCompressed()) {
                 this.out = new GZIPOutputStream(this.out);
             }
-        } catch (FileNotFoundException var13) {
+        } catch (IOException var13) {
             var13.printStackTrace();
-        } catch (IOException var14) {
-            var14.printStackTrace();
         }
 
         this.flushImmediately = configure.flushImmediately();
     }
 
+    @Override
     public void reopen(PropertyConfigure configure) {
         super.reopen(configure);
         this.init(configure);
     }
 
+    @Override
     public void close() {
         super.close();
-
         try {
             if (this.out != null) {
                 this.out.flush();
                 this.out.close();
             }
-
             this.out = null;
         } catch (IOException var2) {
             var2.printStackTrace();

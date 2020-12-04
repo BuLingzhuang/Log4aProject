@@ -25,6 +25,10 @@ public class LogEvent {
         return mConfigure.layout(this);
     }
 
+    public String dumpCRLF(PropertyConfigure mConfigure) {
+        return mConfigure.layout(this)+"\r\n";
+    }
+
     protected String stackTrace() {
         if (this.throwable == null) {
             return "";

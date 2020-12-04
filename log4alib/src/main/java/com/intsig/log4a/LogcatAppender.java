@@ -25,16 +25,13 @@ public class LogcatAppender extends Appender {
             this.info = log.getDeclaredMethod("i", String.class, String.class, Throwable.class);
             this.debug = log.getDeclaredMethod("d", String.class, String.class, Throwable.class);
             this.loaded = true;
-        } catch (ClassNotFoundException var3) {
+        } catch (ClassNotFoundException | SecurityException | NoSuchMethodException var3) {
             var3.printStackTrace();
-        } catch (SecurityException var4) {
-            var4.printStackTrace();
-        } catch (NoSuchMethodException var5) {
-            var5.printStackTrace();
         }
 
     }
 
+    @Override
     public synchronized void append(LogEvent e) {
         if (this.loaded) {
             Level level = e.level;
@@ -61,6 +58,7 @@ public class LogcatAppender extends Appender {
         }
     }
 
+    @Override
     public void close() {
     }
 }

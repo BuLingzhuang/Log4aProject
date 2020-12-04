@@ -14,6 +14,7 @@ public class ConsoleAppender extends Appender {
         System.out.println("==========Begin of Log=========");
     }
 
+    @Override
     public synchronized void append(LogEvent e) {
         if (this.enable(e.level)) {
             System.out.println(e.dump(this.mConfigure));
@@ -21,6 +22,7 @@ public class ConsoleAppender extends Appender {
 
     }
 
+    @Override
     public void close() {
         System.out.println("==========End of Log=========");
     }
