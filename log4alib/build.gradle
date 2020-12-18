@@ -45,7 +45,7 @@ task makeJar(type: Jar) {
     //删除存在的
     delete 'build/log4a.jar'
     //设置拷贝的文件
-    from('build/intermediates/javac/release/compileReleaseJavaWithJavac/classes')
+    from('build/intermediates/javac/release/classes')
     //打进jar包后的文件目录
 //    into('build/')
     //将classes.jar放入build/libs/目录下

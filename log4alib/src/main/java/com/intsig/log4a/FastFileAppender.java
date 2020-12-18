@@ -49,7 +49,7 @@ public class FastFileAppender extends Appender {
 
     private void createNewLogFile() {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss", Locale.CHINA);
-        String name = FILE_NAME_HEAD + sdf.format(new Date()) + FILE_NAME_FOOT;
+        String name = FILE_NAME_HEAD + "fast-" + sdf.format(new Date()) + FILE_NAME_FOOT;
         mCurrentLogFile = new File(mConfigure.getLogDir(), name);
     }
 
@@ -71,7 +71,22 @@ public class FastFileAppender extends Appender {
     @Override
     public synchronized void append(LogEvent event) {
         if (this.enable(event.level)) {
-            write(event.dumpCRLF(this.mConfigure));
+            String msg = event.dumpCRLF(this.mConfigure);
+            if (msg.length() > mConfigure.getCacheMaxSize()) {
+                //单条log超过缓存上限，需要裁切为多条进行写入
+                int subLength = (int) (mConfigure.getCacheMaxSize() / 2);
+                int lastLength = msg.length() % subLength;
+                int partNum = msg.length() / subLength;
+                for (int i = 0; i < partNum; i++) {
+                    write(msg.substring(i * subLength, (i + 1) * subLength));
+                }
+                if (lastLength > 0) {
+                    write(msg.substring(partNum * subLength));
+                }
+            } else {
+                write(msg);
+            }
+
         }
     }
 
@@ -136,9 +151,14 @@ public class FastFileAppender extends Appender {
 
     private void write(String msg) {
         try {
+            if (msg == null) {
+                return;
+            }
             if (mCacheMbb == null) {
                 mCacheMbb = getMbb();
             }
+            // TODO: 2020/12/15 test
+            msg = "F" + msg;
             if (mCacheMbb != null) {
                 mCacheMbb.put(msg.getBytes());
             }

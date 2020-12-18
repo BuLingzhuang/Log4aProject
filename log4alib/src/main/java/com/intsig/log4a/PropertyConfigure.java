@@ -200,7 +200,7 @@ public class PropertyConfigure {
                 this.cacheMaxSize = 1048576L;
             }
         }
-        return this.cacheMaxSize;
+        return Math.max(this.cacheMaxSize, 1048576L);
     }
 
     public int getFileMaxNum() {

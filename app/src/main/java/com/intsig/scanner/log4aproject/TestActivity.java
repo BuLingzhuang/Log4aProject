@@ -5,30 +5,19 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Environment;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-import androidx.datastore.DataStore;
-import androidx.datastore.DataStoreFactory;
-import androidx.datastore.preferences.Preferences;
 
 import com.intsig.log4a.Appender;
 import com.intsig.log4a.Log4A;
 import com.intsig.log4a.PropertyConfigure;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.RandomAccessFile;
-import java.lang.reflect.Method;
-import java.nio.BufferOverflowException;
 import java.nio.MappedByteBuffer;
-import java.nio.channels.FileChannel;
 import java.util.Properties;
 import java.util.Random;
 
