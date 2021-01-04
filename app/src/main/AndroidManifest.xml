@@ -15,14 +15,18 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        tools:replace="android:supportsRtl,android:theme"
-        android:theme="@style/Theme.MyApplication">
-        <activity android:name=".TestActivity">
+        android:requestLegacyExternalStorage="true"
+        android:name=".util.Log4aApplication"
+        android:theme="@style/Theme.MyApplication"
+        tools:replace="android:supportsRtl,android:theme">
+        <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+        <activity android:name=".TestActivity">
         </activity>
     </application>
 

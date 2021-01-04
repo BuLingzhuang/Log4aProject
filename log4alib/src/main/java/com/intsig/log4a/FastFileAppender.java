@@ -49,7 +49,7 @@ public class FastFileAppender extends Appender {
 
     private void createNewLogFile() {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss", Locale.CHINA);
-        String name = FILE_NAME_HEAD + "fast-" + sdf.format(new Date()) + FILE_NAME_FOOT;
+        String name = FILE_NAME_HEAD + sdf.format(new Date()) + FILE_NAME_FOOT;
         mCurrentLogFile = new File(mConfigure.getLogDir(), name);
     }
 
@@ -157,8 +157,6 @@ public class FastFileAppender extends Appender {
             if (mCacheMbb == null) {
                 mCacheMbb = getMbb();
             }
-            // TODO: 2020/12/15 test
-            msg = "F" + msg;
             if (mCacheMbb != null) {
                 mCacheMbb.put(msg.getBytes());
             }
@@ -220,9 +218,11 @@ public class FastFileAppender extends Appender {
                 unmap(mCacheMbb);
                 mCacheMbb = null;
             }
-            if (logSize + byteRealSize > mConfigure.getFileMaxNum()) {
-                createNewLogFile();
-            }
+            //当前保持写入的log不再实时控制，改为下一次应用冷启动的时候检查大小。
+            //对用户单次重度使用的情况日志记录比较友好
+//            if (logSize + byteRealSize > mConfigure.getFileMaxSize()) {
+//                createNewLogFile();
+//            }
         } catch (IOException e) {
             e.printStackTrace();
         }
